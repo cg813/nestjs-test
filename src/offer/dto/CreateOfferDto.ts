@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsEnum, IsNumber, MaxLength, Max, Min } from 'class-validator';
-import { OfferBoxSizeEnum } from '../offer.types';
+import { OfferBoxSizeEnum, OfferTypeEnum } from '../offer.types';
 
 export class CreateOfferDto {
   @IsString()
@@ -39,10 +39,9 @@ export class CreateOfferDto {
   @MaxLength(255)
   offerUrlTemplate: string;
 
-  @IsString()
-  @MaxLength(255)
+  @IsEnum(OfferTypeEnum)
   @IsOptional()
-  providerName?: string;
+  providerName?: OfferTypeEnum;
 
   @IsString()
   @MaxLength(255)

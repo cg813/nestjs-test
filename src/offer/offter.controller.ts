@@ -1,10 +1,10 @@
-import { Controller, Post, UsePipes } from '@nestjs/common';
+import { Controller, Post, HttpException, HttpStatus } from '@nestjs/common';
+import { validate } from 'class-validator';
 import { OfferService } from './offer.service';
 import { CreateOfferDto } from './dto/CreateOfferDto';
-import { ParseOffer1Pipe, ParseOffer2Pipe } from '../utils/pipes';
-import { ParseOffer1, ParseOffer2 } from '../utils/decorators';
+import { ParseOffer1, ParseOffer2 } from './offer.decorator';
 
-@Controller('offer')
+@Controller()
 export class OfferController {
   constructor(
     private readonly offerService: OfferService
@@ -17,9 +17,14 @@ export class OfferController {
     @ParseOffer1() dto: CreateOfferDto
   ) {
     try {
+      const error = await validate(dto);
+      if (error.length) {
+        throw new HttpException(error, HttpStatus.BAD_REQUEST);
+      }
       return this.offerService.createOffer(dto);
     } catch (err) {
-      console.log(err)
+      console.log(err);
+      return err;
     }
   }
 
@@ -29,9 +34,14 @@ export class OfferController {
     @ParseOffer2() dto: CreateOfferDto
   ) {
     try {
+      const error = await validate(dto);
+      if (error.length) {
+        throw new HttpException(error, HttpStatus.BAD_REQUEST);
+      }
       return this.offerService.createOffer(dto);
     } catch (err) {
-      console.log(err)
+      console.log(err);
+      return err;
     }
   }
 }
