@@ -1,9 +1,10 @@
 import { createParamDecorator, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
+import { validate } from 'class-validator';
 import { CreateOfferDto } from './dto/CreateOfferDto';
 import { OfferBoxSizeEnum, OfferTypeEnum } from './offer.types';
 
 export const ParseOffer1 = createParamDecorator(
-  (filter: unknown, ctx: ExecutionContext) => {
+  async (filter: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const value = request.body;
     
@@ -37,13 +38,18 @@ export const ParseOffer1 = createParamDecorator(
     dto.providerName = OfferTypeEnum.OFFER_1;
     dto.externalOfferId = offers[0]?.offer_id;
 
+    const errors = await validate(dto);
+    if (errors.length > 0) {
+      throw new HttpException("Validation failed", HttpStatus.BAD_REQUEST);
+    }
+
     return dto;
   }
 );
 
 
 export const ParseOffer2 = createParamDecorator(
-  (filter: unknown, ctx: ExecutionContext) => {
+  async (filter: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const value = request.body;
     
@@ -74,6 +80,12 @@ export const ParseOffer2 = createParamDecorator(
     dto.offerUrlTemplate = offer.tracking_url;
     dto.providerName = OfferTypeEnum.OFFER_2;
     dto.externalOfferId = offer.campaign_id?.toString();
+
+    const errors = await validate(dto);
+    console.log(errors)
+    if (errors.length > 0) {
+      throw new HttpException("Validation failed", HttpStatus.BAD_REQUEST);
+    }
 
     return dto;
   }
